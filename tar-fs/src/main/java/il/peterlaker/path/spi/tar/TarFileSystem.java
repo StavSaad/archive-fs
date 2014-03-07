@@ -1,7 +1,6 @@
 package il.peterlaker.path.spi.tar;
 
 import static java.nio.file.StandardOpenOption.CREATE_NEW;
-import static java.nio.file.StandardOpenOption.READ;
 import static java.nio.file.StandardOpenOption.WRITE;
 
 import java.io.ByteArrayInputStream;
@@ -49,6 +48,8 @@ public class TarFileSystem extends FileSystem {
 	private boolean readOnly = false;
 	private final Path tfpath;
 	private Map<String, Integer> entryHeadersOffsets;
+	private final List<OutputStream> outputStreams;
+	
 	private byte[] tfByteArray;
 
 	// configurable by env map
@@ -64,7 +65,6 @@ public class TarFileSystem extends FileSystem {
 				.get("default.dir") : "/";
 				if (this.defaultDir.charAt(0) != '/')
 					throw new IllegalArgumentException("default dir should be absolute");
-
 				this.provider = provider;
 				this.tfpath = tfpath;
 				if (Files.notExists(tfpath)) {
@@ -83,7 +83,7 @@ public class TarFileSystem extends FileSystem {
 					this.readOnly = true;
 				this.defaultdir = new TarPath(this, defaultDir.getBytes());
 				this.tfByteArray = Files.readAllBytes(tfpath);
-				this.ch = Files.newByteChannel(tfpath, READ);
+				this.outputStreams = new ArrayList<>();
 				mapEntries();
 	}
 
@@ -241,10 +241,12 @@ public class TarFileSystem extends FileSystem {
 		} finally {
 			endWrite();
 		}
-		beginWrite(); // lock and sync
+		beginWrite();
 		try {
-			ch.close(); // close the ch just in case no update
-		} finally { // and sync dose not close the ch
+			for(OutputStream os : outputStreams) {
+				os.close();
+			}
+		} finally {
 			endWrite();
 		}
 		beginWrite();
@@ -273,7 +275,6 @@ public class TarFileSystem extends FileSystem {
 	}
 
 	private volatile boolean isOpen = true;
-	private final SeekableByteChannel ch; // channel to the tarfile
 
 	private final ReadWriteLock rwlock = new ReentrantReadWriteLock();
 
@@ -431,7 +432,7 @@ public class TarFileSystem extends FileSystem {
 				throw new FileNotFoundException(new String(resolvedPath));
 			}
 		}
-		return new OutputStream() {
+		OutputStream os = new OutputStream() {
 			
 			@Override
 			public void write(int b) throws IOException {
@@ -456,6 +457,8 @@ public class TarFileSystem extends FileSystem {
 				addEntryToByteArray(data);
 			}
 		};
+		this.outputStreams.add(os);
+		return os;
 	}
 	
 	private byte[] getDataBytes(byte[] path) {
