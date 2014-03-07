@@ -779,7 +779,7 @@ public class TarPath implements Path {
 				copyAttrs = true;
 		}
 		// attributes of source file
-		TarFileAttributes zfas = getAttributes();
+		TarFileAttributes tfas = getAttributes();
 		// check if target exists
 		boolean exists;
 		if (replaceExisting) {
@@ -795,7 +795,7 @@ public class TarPath implements Path {
 		if (exists)
 			throw new FileAlreadyExistsException(target.toString());
 
-		if (zfas.isDirectory()) {
+		if (tfas.isDirectory()) {
 			// create directory or file
 			target.createDirectory();
 		} else {
@@ -819,8 +819,8 @@ public class TarPath implements Path {
 			BasicFileAttributeView view = TarFileAttributeView.get(target,
 					BasicFileAttributeView.class);
 			try {
-				view.setTimes(zfas.lastModifiedTime(), zfas.lastAccessTime(),
-						zfas.creationTime());
+				view.setTimes(tfas.lastModifiedTime(), tfas.lastAccessTime(),
+						tfas.creationTime());
 			} catch (IOException x) {
 				// rollback?
 				try {

@@ -21,6 +21,7 @@ import java.nio.file.Files;
 import java.nio.file.OpenOption;
 import java.nio.file.Path;
 import java.nio.file.PathMatcher;
+import java.nio.file.StandardCopyOption;
 import java.nio.file.StandardOpenOption;
 import java.nio.file.WatchService;
 import java.nio.file.attribute.FileAttribute;
@@ -97,11 +98,11 @@ public class TarFileSystem extends FileSystem {
 				if(new String(magic).equals("ustar")) {
 					TarEntry te = new TarEntry(block);
 					String name =te.getName();
+					this.entryHeadersOffsets.put(name, i*TarConstants.DATA_BLOCK);
 					int blocksNeeded = (int) Math.ceil((double) te.getSize() / TarConstants.DATA_BLOCK);
 					for(int j = 0; j < blocksNeeded; j++) {
 						i++;
 					}
-					this.entryHeadersOffsets.put(name, i*TarConstants.DATA_BLOCK);
 				}
 			}
 		} finally {
@@ -329,6 +330,7 @@ public class TarFileSystem extends FileSystem {
 			this.tfByteArray = newArr;
 		} finally {
 			endWrite();
+			mapEntries();
 		}
 	}
 
@@ -366,6 +368,7 @@ public class TarFileSystem extends FileSystem {
 			this.tfByteArray = newArr;
 		} finally {
 			endWrite();
+			mapEntries();
 		}
 	}
 
@@ -391,6 +394,7 @@ public class TarFileSystem extends FileSystem {
 			}
 		} finally {
 			endWrite();
+			mapEntries();
 		}
 	}
 
@@ -461,10 +465,33 @@ public class TarFileSystem extends FileSystem {
 		return data;
 	}
 
-	public void copyFile(boolean b, byte[] resolvedPath, byte[] resolvedPath2,
-			CopyOption... options) {
-		// TODO Auto-generated method stub
-
+	public void copyFile(boolean deleteSourceFile, byte[] srcPath, byte[] targetPath,
+			CopyOption... options) throws IOException {
+		List<CopyOption> opts = Arrays.asList(options);
+		if(!exists(srcPath)) {
+			throw new FileNotFoundException();
+		}
+		if(exists(targetPath) && !opts.contains(StandardCopyOption.REPLACE_EXISTING)) {
+			throw new FileAlreadyExistsException(new String(targetPath));
+		}
+		beginWrite();
+		try {
+			TarEntry srcEntry = getTarEntryFromPath(srcPath);
+			byte[] data = getDataBytes(srcPath);
+			if(exists(targetPath)) {
+				deleteFile(targetPath, true);
+			}
+			TarEntry targetEntry = new TarEntry(TarHeader.createHeader(new String(targetPath), data.length, srcEntry.getModTime().getTime(), srcEntry.isDirectory()));
+			byte[] outputData = new byte[(int) (TarConstants.HEADER_BLOCK+srcEntry.getSize())];
+			targetEntry.writeEntryHeader(outputData);
+			for(int i = 0; i < data.length; i++) {
+				outputData[TarConstants.HEADER_BLOCK+i] = data[i];
+			}
+			outputData = Arrays.copyOf(outputData, (int) Math.ceil((double) outputData.length / TarConstants.DATA_BLOCK)*TarConstants.DATA_BLOCK);
+			addEntryToByteArray(outputData);
+		} finally {
+			endWrite();
+		}
 	}
 
 }
