@@ -1,1 +1,2 @@
 il.peterlaker.path.spi.tar.TarFileSystemProvider
+il.peterlaker.path.spi.tar.gz.TarGzipFileSystemProvider

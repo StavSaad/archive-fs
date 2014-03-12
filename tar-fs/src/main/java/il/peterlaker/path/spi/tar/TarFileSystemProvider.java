@@ -34,7 +34,7 @@ import java.util.concurrent.ExecutorService;
 
 public class TarFileSystemProvider extends FileSystemProvider {
 
-	private final Map<Path, TarFileSystem> filesystems = new HashMap<>();
+	protected final Map<Path, TarFileSystem> filesystems = new HashMap<>();
 
 	public TarFileSystemProvider() {
 	}
@@ -61,7 +61,7 @@ public class TarFileSystemProvider extends FileSystemProvider {
 		}
 	}
 
-	private boolean ensureFile(Path path) {
+	protected boolean ensureFile(Path path) {
 		try {
 			BasicFileAttributes attrs = Files.readAttributes(path,
 					BasicFileAttributes.class);
