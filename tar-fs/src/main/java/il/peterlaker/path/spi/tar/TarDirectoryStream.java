@@ -10,7 +10,7 @@ import java.util.NoSuchElementException;
 
 public class TarDirectoryStream implements DirectoryStream<Path> {
 
-    private final TarFileSystem tarfs;
+    private final AbstractTarFileSystem tarfs;
     private final byte[] path;
     private final DirectoryStream.Filter<? super Path> filter;
     private volatile boolean isClosed;

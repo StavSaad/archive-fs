@@ -11,7 +11,7 @@ import java.nio.file.attribute.FileStoreAttributeView;
 
 public class TarFileStore extends FileStore {
 
-    private final TarFileSystem tfs;
+    private final AbstractTarFileSystem tfs;
 
     TarFileStore(TarPath tpath) {
         this.tfs = tpath.getFileSystem();

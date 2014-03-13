@@ -1,8 +1,8 @@
 package il.peterlaker.path.spi.tar.gz;
 
 import il.peterlaker.path.spi.tar.TarConstants;
-import il.peterlaker.path.spi.tar.TarFileSystem;
-import il.peterlaker.path.spi.tar.TarFileSystemProvider;
+import il.peterlaker.path.spi.tar.AbstractTarFileSystem;
+import il.peterlaker.path.spi.tar.AbstractTarFileSystemProvider;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -13,9 +13,9 @@ import java.util.Map;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
 
-public class TarGzipFileSystem extends TarFileSystem {
+public class TarGzipFileSystem extends AbstractTarFileSystem {
 
-	TarGzipFileSystem(TarFileSystemProvider provider, Path tfpath,
+	TarGzipFileSystem(AbstractTarFileSystemProvider provider, Path tfpath,
 			Map<String, ?> env) throws IOException {
 		super(provider, tfpath, env);
 	}
@@ -30,6 +30,7 @@ public class TarGzipFileSystem extends TarFileSystem {
 		while (gzipInputStream.available() > 0) {
 			ret.add((byte) gzipInputStream.read());
 		}
+		gzipInputStream.close();
 		byte[] inflatedBytes = new byte[ret.size()];
 		for (int i = 0; i < inflatedBytes.length; i++) {
 			inflatedBytes[i] = ret.get(i);

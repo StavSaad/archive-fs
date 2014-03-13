@@ -43,16 +43,16 @@ import java.util.Set;
 
 public class TarPath implements Path {
 
-	private final TarFileSystem tfs;
+	private final AbstractTarFileSystem tfs;
 	private final byte[] path;
 	private volatile int[] offsets;
 	private int hashcode = 0; // cached hashcode (created lazily)
 
-	TarPath(TarFileSystem tfs, byte[] path) {
+	TarPath(AbstractTarFileSystem tfs, byte[] path) {
 		this(tfs, path, false);
 	}
 
-	TarPath(TarFileSystem tfs, byte[] path, boolean normalized) {
+	TarPath(AbstractTarFileSystem tfs, byte[] path, boolean normalized) {
 		this.tfs = tfs;
 		if (normalized)
 			this.path = path;
@@ -246,7 +246,7 @@ public class TarPath implements Path {
 	}
 
 	@Override
-	public TarFileSystem getFileSystem() {
+	public AbstractTarFileSystem getFileSystem() {
 		return tfs;
 	}
 

@@ -12,6 +12,7 @@ repositories {
 }
 
 dependencies {
+	compile 'org.apache.commons:commons-compress:1.8'
 	testCompile 'junit:junit:4.11'
 }
 
