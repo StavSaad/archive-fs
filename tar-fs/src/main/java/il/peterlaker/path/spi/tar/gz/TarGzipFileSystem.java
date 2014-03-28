@@ -13,7 +13,7 @@ import java.util.Map;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
 
-public class TarGzipFileSystem extends AbstractTarFileSystem {
+class TarGzipFileSystem extends AbstractTarFileSystem {
 
 	TarGzipFileSystem(AbstractTarFileSystemProvider provider, Path tfpath,
 			Map<String, ?> env) throws IOException {

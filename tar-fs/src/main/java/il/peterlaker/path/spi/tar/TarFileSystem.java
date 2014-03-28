@@ -6,7 +6,7 @@ import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
 import java.util.Map;
 
-public class TarFileSystem extends AbstractTarFileSystem {
+class TarFileSystem extends AbstractTarFileSystem {
 
 	protected TarFileSystem(AbstractTarFileSystemProvider provider,
 			Path tfpath, Map<String, ?> env) throws IOException {

@@ -15,7 +15,7 @@ import il.peterlaker.path.spi.tar.AbstractTarFileSystem;
 import il.peterlaker.path.spi.tar.TarConstants;
 import il.peterlaker.path.spi.tar.AbstractTarFileSystemProvider;
 
-public class TarBzip2FileSystem extends AbstractTarFileSystem {
+class TarBzip2FileSystem extends AbstractTarFileSystem {
 
 	protected TarBzip2FileSystem(AbstractTarFileSystemProvider provider,
 			Path tfpath, Map<String, ?> env) throws IOException {

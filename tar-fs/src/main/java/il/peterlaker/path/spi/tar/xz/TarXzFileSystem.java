@@ -15,7 +15,7 @@ import java.util.Map;
 import org.apache.commons.compress.compressors.xz.XZCompressorInputStream;
 import org.apache.commons.compress.compressors.xz.XZCompressorOutputStream;
 
-public class TarXzFileSystem extends AbstractTarFileSystem {
+class TarXzFileSystem extends AbstractTarFileSystem {
 
 	protected TarXzFileSystem(AbstractTarFileSystemProvider provider,
 			Path tfpath, Map<String, ?> env) throws IOException {
