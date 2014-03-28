@@ -48,22 +48,24 @@ public abstract class AbstractTarFileSystemProvider extends FileSystemProvider {
 		try {
 			String spec = uri.getRawSchemeSpecificPart();
 			int sep = spec.indexOf("!/");
-			if (sep != -1)
+			if (sep != -1) {
 				spec = spec.substring(0, sep);
+			}
 			return Paths.get(new URI(spec)).toAbsolutePath();
 		} catch (URISyntaxException e) {
 			throw new IllegalArgumentException(e.getMessage(), e);
 		}
 	}
-	
+
 	protected abstract AbstractTarFileSystem newInstance(AbstractTarFileSystemProvider provider, Path path, Map<String, ?> env) throws IOException;
 
 	protected boolean ensureFile(Path path) {
 		try {
 			BasicFileAttributes attrs = Files.readAttributes(path,
 					BasicFileAttributes.class);
-			if (!attrs.isRegularFile())
+			if (!attrs.isRegularFile()) {
 				throw new UnsupportedOperationException();
+			}
 			return true;
 		} catch (IOException ioe) {
 			return false;
@@ -78,8 +80,9 @@ public abstract class AbstractTarFileSystemProvider extends FileSystemProvider {
 			Path realPath = null;
 			if (ensureFile(path)) {
 				realPath = path.toRealPath();
-				if (filesystems.containsKey(realPath))
+				if (filesystems.containsKey(realPath)) {
 					throw new FileSystemAlreadyExistsException();
+				}
 			}
 			AbstractTarFileSystem tarfs = null;
 			tarfs = newInstance(this, path, env);
@@ -103,11 +106,12 @@ public abstract class AbstractTarFileSystemProvider extends FileSystemProvider {
 
 		String spec = uri.getSchemeSpecificPart();
 		int sep = spec.indexOf("!/");
-		if (sep == -1)
+		if (sep == -1) {
 			throw new IllegalArgumentException(
 					"URI: "
 							+ uri
 							+ " does not contain path info ex. tar:file:/c:/foo.tar!/BAR");
+		}
 		return getFileSystem(uri).getPath(spec.substring(sep + 1));
 	}
 
@@ -120,18 +124,21 @@ public abstract class AbstractTarFileSystemProvider extends FileSystemProvider {
 			} catch (IOException x) {
 				// ignore the ioe from toRealPath(), return FSNFE
 			}
-			if (tarfs == null)
+			if (tarfs == null) {
 				throw new FileSystemNotFoundException();
+			}
 			return tarfs;
 		}
 	}
 
 	// Checks that the given file is a UnixPath
 	static final TarPath toTarPath(Path path) {
-		if (path == null)
+		if (path == null) {
 			throw new NullPointerException();
-		if (!(path instanceof TarPath))
+		}
+		if (!(path instanceof TarPath)) {
 			throw new ProviderMismatchException();
+		}
 		return (TarPath) path;
 	}
 
@@ -194,7 +201,7 @@ public abstract class AbstractTarFileSystemProvider extends FileSystemProvider {
 	@Override
 	public SeekableByteChannel newByteChannel(Path path,
 			Set<? extends OpenOption> options, FileAttribute<?>... attrs)
-			throws IOException {
+					throws IOException {
 		return toTarPath(path).newByteChannel(options, attrs);
 	}
 
@@ -207,7 +214,7 @@ public abstract class AbstractTarFileSystemProvider extends FileSystemProvider {
 	@Override
 	public FileChannel newFileChannel(Path path,
 			Set<? extends OpenOption> options, FileAttribute<?>... attrs)
-			throws IOException {
+					throws IOException {
 		return toTarPath(path).newFileChannel(options, attrs);
 	}
 
@@ -228,8 +235,9 @@ public abstract class AbstractTarFileSystemProvider extends FileSystemProvider {
 	public <A extends BasicFileAttributes> A readAttributes(Path path,
 			Class<A> type, LinkOption... options) throws IOException {
 		if (type == BasicFileAttributes.class
-				|| type == TarFileAttributes.class)
+				|| type == TarFileAttributes.class) {
 			return (A) toTarPath(path).getAttributes();
+		}
 		return null;
 	}
 
@@ -253,8 +261,9 @@ public abstract class AbstractTarFileSystemProvider extends FileSystemProvider {
 	void removeFileSystem(Path tfpath, AbstractTarFileSystem tfs) throws IOException {
 		synchronized (filesystems) {
 			tfpath = tfpath.toRealPath();
-			if (filesystems.get(tfpath) == tfs)
+			if (filesystems.get(tfpath) == tfs) {
 				filesystems.remove(tfpath);
+			}
 		}
 	}
 }

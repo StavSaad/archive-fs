@@ -20,5 +20,5 @@ public class TarGzipFileSystemProvider extends AbstractTarFileSystemProvider {
 			Map<String, ?> env) throws IOException {
 		return new TarGzipFileSystem(provider, path, env);
 	}
-	
+
 }

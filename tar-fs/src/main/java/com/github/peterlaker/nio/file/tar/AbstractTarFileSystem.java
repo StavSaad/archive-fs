@@ -1,8 +1,5 @@
 package com.github.peterlaker.nio.file.tar;
 
-import static java.nio.file.StandardOpenOption.CREATE_NEW;
-import static java.nio.file.StandardOpenOption.WRITE;
-
 import java.io.ByteArrayInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -47,7 +44,7 @@ public abstract class AbstractTarFileSystem extends FileSystem {
 	private final AbstractTarFileSystemProvider provider;
 	private final TarPath defaultdir;
 	private boolean readOnly = false;
-	protected final Path tfpath;
+	private final Path tfpath;
 	private final List<OutputStream> outputStreams;
 	private Map<TarEntry, byte[]> entriesToData;
 
@@ -58,31 +55,28 @@ public abstract class AbstractTarFileSystem extends FileSystem {
 	protected AbstractTarFileSystem(AbstractTarFileSystemProvider provider, Path tfpath,
 			Map<String, ?> env) throws IOException {
 		// configurable env setup
-		this.createNew = "true".equals(env.get("create"));
-		this.defaultDir = env.containsKey("default.dir") ? (String) env
+		createNew = "true".equals(env.get("create"));
+		defaultDir = env.containsKey("default.dir") ? (String) env
 				.get("default.dir") : "/";
-		this.entriesToData = new HashMap<>();
-		if (this.defaultDir.charAt(0) != '/')
-			throw new IllegalArgumentException("default dir should be absolute");
-		this.provider = provider;
-		this.tfpath = tfpath;
-		if (Files.notExists(tfpath)) {
-			if (createNew) {
-				try (OutputStream os = Files.newOutputStream(tfpath,
-						CREATE_NEW, WRITE)) {
-					os.write(new byte[TarConstants.DATA_BLOCK]);
+				entriesToData = new HashMap<>();
+				if (defaultDir.charAt(0) != '/') {
+					throw new IllegalArgumentException("default dir should be absolute");
 				}
-			} else {
-				throw new FileSystemNotFoundException(tfpath.toString());
-			}
-		}
-		// sm and existence check
-		tfpath.getFileSystem().provider().checkAccess(tfpath, AccessMode.READ);
-		if (!Files.isWritable(tfpath))
-			this.readOnly = true;
-		this.defaultdir = new TarPath(this, defaultDir.getBytes());
-		this.outputStreams = new ArrayList<>();
-		mapEntries();
+				this.provider = provider;
+				this.tfpath = tfpath;
+				if (Files.notExists(tfpath)) {
+					if (!createNew) {
+						throw new FileSystemNotFoundException(tfpath.toString());
+					}
+				}
+				// sm and existence check
+				tfpath.getFileSystem().provider().checkAccess(tfpath, AccessMode.READ);
+				if (!Files.isWritable(tfpath)) {
+					readOnly = true;
+				}
+				defaultdir = new TarPath(this, defaultDir.getBytes());
+				outputStreams = new ArrayList<>();
+				mapEntries();
 	}
 
 	protected abstract byte[] readFile(Path path) throws IOException;
@@ -90,8 +84,13 @@ public abstract class AbstractTarFileSystem extends FileSystem {
 	private void mapEntries() throws IOException {
 		beginRead();
 		try {
-			this.entriesToData.clear();
-			byte[] tfByteArray = readFile(tfpath);
+			entriesToData.clear();
+			byte[] tfByteArray;
+			if(Files.notExists(tfpath)) {
+				tfByteArray = new byte[TarConstants.DATA_BLOCK];
+			} else {
+				tfByteArray = readFile(tfpath);
+			}
 			int numOfBlocks = (int) Math.ceil((double) tfByteArray.length
 					/ TarConstants.DATA_BLOCK) - 1; // discard the EOF block
 			for (int i = 0; i < numOfBlocks; i++) {
@@ -157,8 +156,9 @@ public abstract class AbstractTarFileSystem extends FileSystem {
 			sb.append(first);
 			for (String segment : more) {
 				if (segment.length() > 0) {
-					if (sb.length() > 0)
+					if (sb.length() > 0) {
 						sb.append('/');
+					}
 					sb.append(segment);
 				}
 			}
@@ -241,8 +241,9 @@ public abstract class AbstractTarFileSystem extends FileSystem {
 	public void close() throws IOException {
 		beginWrite();
 		try {
-			if (!isOpen)
+			if (!isOpen) {
 				return;
+			}
 			isOpen = false; // set closed
 		} finally {
 			endWrite();
@@ -257,6 +258,10 @@ public abstract class AbstractTarFileSystem extends FileSystem {
 		}
 		beginWrite();
 		try {
+			if(Files.notExists(tfpath)) {
+				Files.createDirectories(tfpath.getParent());
+				Files.createFile(tfpath);
+			}
 			writeFile(getTarBytes(), tfpath);
 		} finally {
 			endWrite();
@@ -312,13 +317,14 @@ public abstract class AbstractTarFileSystem extends FileSystem {
 
 	private final ReadWriteLock rwlock = new ReentrantReadWriteLock();
 
+	@Override
 	protected void finalize() throws IOException {
 		close();
 	}
 
 	public Iterator<Path> iteratorOf(byte[] path,
 			java.nio.file.DirectoryStream.Filter<? super Path> filter)
-			throws IOException {
+					throws IOException {
 		Collection<Path> subPaths = new ArrayList<>();
 		String pathString = new String(path);
 		for (TarEntry te : entriesToData.keySet()) {
@@ -362,7 +368,7 @@ public abstract class AbstractTarFileSystem extends FileSystem {
 	private void addEntry(TarEntry te, byte[] data) {
 		beginWrite();
 		try {
-			this.entriesToData.put(te, data);
+			entriesToData.put(te, data);
 		} finally {
 			endWrite();
 		}
@@ -453,7 +459,7 @@ public abstract class AbstractTarFileSystem extends FileSystem {
 				addEntry(e, data);
 			}
 		};
-		this.outputStreams.add(os);
+		outputStreams.add(os);
 		return os;
 	}
 
@@ -481,7 +487,7 @@ public abstract class AbstractTarFileSystem extends FileSystem {
 			}
 			TarEntry targetEntry = new TarEntry(TarHeader.createHeader(
 					new String(targetPath), data.length, srcEntry.getModTime()
-							.getTime(), srcEntry.isDirectory()));
+					.getTime(), srcEntry.isDirectory()));
 			addEntry(targetEntry, data);
 		} finally {
 			endWrite();

@@ -4,7 +4,7 @@ import java.io.File;
 
 /**
  * Header
- * 
+ *
  * <pre>
  * Offset  Size     Field
  * 0       100      File name
@@ -17,10 +17,10 @@ import java.io.File;
  * 156     1        Link indicator (file type)
  * 157     100      Name of linked file
  * </pre>
- * 
- * 
+ *
+ *
  * File Types
- * 
+ *
  * <pre>
  * Value        Meaning
  * '0'          Normal file
@@ -33,11 +33,11 @@ import java.io.File;
  * '6'          FIFO
  * '7'          Contigous
  * </pre>
- * 
- * 
- * 
+ *
+ *
+ *
  * Ustar header
- * 
+ *
  * <pre>
  * Offset  Size    Field
  * 257     6       UStar indicator "ustar"
@@ -104,21 +104,22 @@ public class TarHeader {
 	public StringBuffer namePrefix;
 
 	public TarHeader() {
-		this.magic = new StringBuffer(TarHeader.USTAR_MAGIC);
+		magic = new StringBuffer(TarHeader.USTAR_MAGIC);
 
-		this.name = new StringBuffer();
-		this.linkName = new StringBuffer();
+		name = new StringBuffer();
+		linkName = new StringBuffer();
 
 		String user = System.getProperty("user.name", "");
 
-		if (user.length() > 31)
+		if (user.length() > 31) {
 			user = user.substring(0, 31);
+		}
 
-		this.userId = 0;
-		this.groupId = 0;
-		this.userName = new StringBuffer(user);
-		this.groupName = new StringBuffer("");
-		this.namePrefix = new StringBuffer();
+		userId = 0;
+		groupId = 0;
+		userName = new StringBuffer(user);
+		groupName = new StringBuffer("");
+		namePrefix = new StringBuffer();
 	}
 
 	public static StringBuffer parseName(byte[] header, int offset, int length) {
@@ -126,8 +127,9 @@ public class TarHeader {
 
 		int end = offset + length;
 		for (int i = offset; i < end; ++i) {
-			if (header[i] == 0)
+			if (header[i] == 0) {
 				break;
+			}
 			result.append((char) header[i]);
 		}
 

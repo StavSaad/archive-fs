@@ -8,23 +8,23 @@ public class TarEntry {
 	protected TarHeader header;
 
 	private TarEntry() {
-		this.file = null;
+		file = null;
 		header = new TarHeader();
 	}
 
 	public TarEntry(File file, String entryName) {
 		this();
 		this.file = file;
-		this.extractTarHeader(entryName);
+		extractTarHeader(entryName);
 	}
 
 	public TarEntry(byte[] headerBuf) {
 		this();
-		this.parseTarHeader(headerBuf);
+		parseTarHeader(headerBuf);
 	}
 
 	public TarEntry(TarHeader header) {
-		this.file = null;
+		file = null;
 		this.header = header;
 	}
 
@@ -86,8 +86,8 @@ public class TarEntry {
 	}
 
 	public void setIds(int userId, int groupId) {
-		this.setUserId(userId);
-		this.setGroupId(groupId);
+		setUserId(userId);
+		setGroupId(groupId);
 	}
 
 	public void setModTime(long time) {
@@ -103,7 +103,7 @@ public class TarEntry {
 	}
 
 	public File getFile() {
-		return this.file;
+		return file;
 	}
 
 	public long getSize() {
@@ -116,11 +116,13 @@ public class TarEntry {
 
 	public boolean isDirectory() {
 		if (header != null) {
-			if (header.linkFlag == TarHeader.LF_DIR)
+			if (header.linkFlag == TarHeader.LF_DIR) {
 				return true;
+			}
 
-			if (header.name.toString().endsWith("/"))
+			if (header.name.toString().endsWith("/")) {
 				return true;
+			}
 		}
 
 		return false;
@@ -154,8 +156,9 @@ public class TarEntry {
 		offset = Octal.getLongOctalBytes(header.modTime, outbuf, offset, TarHeader.MODTIMELEN);
 
 		int csOffset = offset;
-		for (int c = 0; c < TarHeader.CHKSUMLEN; ++c)
+		for (int c = 0; c < TarHeader.CHKSUMLEN; ++c) {
 			outbuf[offset++] = (byte) ' ';
+		}
 
 		outbuf[offset++] = header.linkFlag;
 
@@ -167,10 +170,11 @@ public class TarEntry {
 		offset = Octal.getOctalBytes(header.devMinor, outbuf, offset, TarHeader.USTAR_DEVLEN);
 		offset = TarHeader.getNameBytes(header.namePrefix, outbuf, offset, TarHeader.USTAR_FILENAME_PREFIX);
 
-		for (; offset < outbuf.length;)
+		for (; offset < outbuf.length;) {
 			outbuf[offset++] = 0;
+		}
 
-		long checkSum = this.computeCheckSum(outbuf);
+		long checkSum = computeCheckSum(outbuf);
 
 		Octal.getCheckSumOctalBytes(checkSum, outbuf, csOffset, TarHeader.CHKSUMLEN);
 	}

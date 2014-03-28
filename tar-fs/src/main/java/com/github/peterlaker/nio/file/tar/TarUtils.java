@@ -1,5 +1,8 @@
 package com.github.peterlaker.nio.file.tar;
 
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.regex.PatternSyntaxException;
 
 public class TarUtils {
@@ -180,4 +183,15 @@ public class TarUtils {
 		}
 		return regex.append('$').toString();
 	}
+
+	public static byte[] readAllBytes(InputStream inputStream) throws IOException {
+		ByteArrayOutputStream baos = new ByteArrayOutputStream();
+		int nRead;
+		byte[] data = new byte[16384];
+		while((nRead = inputStream.read(data, 0, data.length-1)) != -1) {
+			baos.write(data, 0, nRead);
+		}
+		return baos.toByteArray();
+	}
+
 }
