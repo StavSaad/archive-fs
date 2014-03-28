@@ -1,11 +1,11 @@
-package il.peterlaker.path.spi.tar.xz;
+package com.github.peterlaker.nio.file.tar.xz;
 
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.Map;
 
-import il.peterlaker.path.spi.tar.AbstractTarFileSystem;
-import il.peterlaker.path.spi.tar.AbstractTarFileSystemProvider;
+import com.github.peterlaker.nio.file.tar.AbstractTarFileSystem;
+import com.github.peterlaker.nio.file.tar.AbstractTarFileSystemProvider;
 
 public class TarXzFileSystemProvider extends AbstractTarFileSystemProvider {
 

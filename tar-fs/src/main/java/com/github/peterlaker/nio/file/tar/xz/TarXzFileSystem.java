@@ -1,8 +1,4 @@
-package il.peterlaker.path.spi.tar.xz;
-
-import il.peterlaker.path.spi.tar.AbstractTarFileSystem;
-import il.peterlaker.path.spi.tar.AbstractTarFileSystemProvider;
-import il.peterlaker.path.spi.tar.TarConstants;
+package com.github.peterlaker.nio.file.tar.xz;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -14,6 +10,10 @@ import java.util.Map;
 
 import org.apache.commons.compress.compressors.xz.XZCompressorInputStream;
 import org.apache.commons.compress.compressors.xz.XZCompressorOutputStream;
+
+import com.github.peterlaker.nio.file.tar.AbstractTarFileSystem;
+import com.github.peterlaker.nio.file.tar.AbstractTarFileSystemProvider;
+import com.github.peterlaker.nio.file.tar.TarConstants;
 
 class TarXzFileSystem extends AbstractTarFileSystem {
 

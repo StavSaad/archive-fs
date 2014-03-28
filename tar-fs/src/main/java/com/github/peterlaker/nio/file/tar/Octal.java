@@ -1,4 +1,4 @@
-package il.peterlaker.path.spi.tar;
+package com.github.peterlaker.nio.file.tar;
 public class Octal {
 
     public static long parseOctal(byte[] header, int offset, int length) {

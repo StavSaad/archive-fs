@@ -1,4 +1,4 @@
-package il.peterlaker.path.spi.tar.bz2;
+package com.github.peterlaker.nio.file.tar.bz2;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -11,9 +11,9 @@ import java.util.Map;
 import org.apache.commons.compress.compressors.bzip2.BZip2CompressorInputStream;
 import org.apache.commons.compress.compressors.bzip2.BZip2CompressorOutputStream;
 
-import il.peterlaker.path.spi.tar.AbstractTarFileSystem;
-import il.peterlaker.path.spi.tar.TarConstants;
-import il.peterlaker.path.spi.tar.AbstractTarFileSystemProvider;
+import com.github.peterlaker.nio.file.tar.AbstractTarFileSystem;
+import com.github.peterlaker.nio.file.tar.AbstractTarFileSystemProvider;
+import com.github.peterlaker.nio.file.tar.TarConstants;
 
 class TarBzip2FileSystem extends AbstractTarFileSystem {
 

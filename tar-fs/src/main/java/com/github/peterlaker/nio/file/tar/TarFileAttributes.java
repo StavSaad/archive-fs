@@ -1,4 +1,4 @@
-package il.peterlaker.path.spi.tar;
+package com.github.peterlaker.nio.file.tar;
 
 import java.nio.file.attribute.BasicFileAttributes;
 import java.nio.file.attribute.FileTime;

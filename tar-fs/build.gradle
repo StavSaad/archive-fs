@@ -4,7 +4,7 @@ apply plugin: 'wrapper'
 apply plugin: 'idea'
 apply plugin: 'jacoco'
 
-group = 'il.peterlaker'
+group = 'com.github.peterlaker'
 version = '1.0.0'
 
 repositories {

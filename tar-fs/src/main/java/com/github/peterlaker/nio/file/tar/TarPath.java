@@ -1,4 +1,4 @@
-package il.peterlaker.path.spi.tar;
+package com.github.peterlaker.nio.file.tar;
 
 import static java.nio.file.StandardCopyOption.COPY_ATTRIBUTES;
 import static java.nio.file.StandardCopyOption.REPLACE_EXISTING;

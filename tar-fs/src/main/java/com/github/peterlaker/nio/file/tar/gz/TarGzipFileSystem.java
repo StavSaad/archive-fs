@@ -1,8 +1,4 @@
-package il.peterlaker.path.spi.tar.gz;
-
-import il.peterlaker.path.spi.tar.TarConstants;
-import il.peterlaker.path.spi.tar.AbstractTarFileSystem;
-import il.peterlaker.path.spi.tar.AbstractTarFileSystemProvider;
+package com.github.peterlaker.nio.file.tar.gz;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -12,6 +8,10 @@ import java.util.ArrayList;
 import java.util.Map;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
+
+import com.github.peterlaker.nio.file.tar.AbstractTarFileSystem;
+import com.github.peterlaker.nio.file.tar.AbstractTarFileSystemProvider;
+import com.github.peterlaker.nio.file.tar.TarConstants;
 
 class TarGzipFileSystem extends AbstractTarFileSystem {
 

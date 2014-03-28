@@ -1,11 +1,11 @@
-package il.peterlaker.path.spi.tar.gz;
-
-import il.peterlaker.path.spi.tar.AbstractTarFileSystem;
-import il.peterlaker.path.spi.tar.AbstractTarFileSystemProvider;
+package com.github.peterlaker.nio.file.tar.gz;
 
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.Map;
+
+import com.github.peterlaker.nio.file.tar.AbstractTarFileSystem;
+import com.github.peterlaker.nio.file.tar.AbstractTarFileSystemProvider;
 
 public class TarGzipFileSystemProvider extends AbstractTarFileSystemProvider {
 

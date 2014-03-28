@@ -1,4 +1,4 @@
-package il.peterlaker.path.spi.tar;
+package com.github.peterlaker.nio.file.tar;
 
 public class TarConstants {
     public static final int EOF_BLOCK = 1024;

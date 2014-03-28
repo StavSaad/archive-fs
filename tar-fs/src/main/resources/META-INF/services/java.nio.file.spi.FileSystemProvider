@@ -1,4 +1,4 @@
-il.peterlaker.path.spi.tar.TarFileSystemProvider
-il.peterlaker.path.spi.tar.gz.TarGzipFileSystemProvider
-il.peterlaker.path.spi.tar.bz2.TarBzip2FileSystemProvider
-il.peterlaker.path.spi.tar.xz.TarXzFileSystemProvider
+com.github.peterlaker.nio.file.tar.TarFileSystemProvider
+com.github.peterlaker.nio.file.tar.gz.TarGzipFileSystemProvider
+com.github.peterlaker.nio.file.tar.bz2.TarBzip2FileSystemProvider
+com.github.peterlaker.nio.file.tar.xz.TarXzFileSystemProvider
