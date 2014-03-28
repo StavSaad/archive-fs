@@ -17,18 +17,18 @@ import il.peterlaker.path.spi.tar.AbstractTarFileSystemProvider;
 
 public class TarBzip2FileSystem extends AbstractTarFileSystem {
 
-	protected TarBzip2FileSystem(AbstractTarFileSystemProvider provider, Path tfpath,
-			Map<String, ?> env) throws IOException {
+	protected TarBzip2FileSystem(AbstractTarFileSystemProvider provider,
+			Path tfpath, Map<String, ?> env) throws IOException {
 		super(provider, tfpath, env);
 	}
 
 	@Override
-	protected byte[] readFile() throws IOException {
-		if(!Files.exists(tfpath)) {
+	protected byte[] readFile(Path path) throws IOException {
+		if (!Files.exists(path)) {
 			return new byte[TarConstants.DATA_BLOCK];
 		}
 		BZip2CompressorInputStream inputStream = new BZip2CompressorInputStream(
-				Files.newInputStream(tfpath));
+				Files.newInputStream(path));
 		List<Byte> bytes = new ArrayList<>();
 		while (inputStream.available() > 0) {
 			bytes.add((byte) inputStream.read());
@@ -42,9 +42,9 @@ public class TarBzip2FileSystem extends AbstractTarFileSystem {
 	}
 
 	@Override
-	protected void writeFile(byte[] tarBytes) throws IOException {
+	protected void writeFile(byte[] tarBytes, Path path) throws IOException {
 		BZip2CompressorOutputStream outputStream = new BZip2CompressorOutputStream(
-				Files.newOutputStream(tfpath,
+				Files.newOutputStream(path,
 						StandardOpenOption.TRUNCATE_EXISTING,
 						StandardOpenOption.WRITE));
 		outputStream.write(tarBytes, 0, tarBytes.length);

@@ -23,12 +23,12 @@ public class TarXzFileSystem extends AbstractTarFileSystem {
 	}
 
 	@Override
-	protected byte[] readFile() throws IOException {
-		if(!Files.exists(tfpath)) {
+	protected byte[] readFile(Path path) throws IOException {
+		if (!Files.exists(path)) {
 			return new byte[TarConstants.DATA_BLOCK];
 		}
 		XZCompressorInputStream inputStream = new XZCompressorInputStream(
-				Files.newInputStream(tfpath));
+				Files.newInputStream(path));
 		List<Byte> bytes = new ArrayList<>();
 		while (inputStream.available() > 0) {
 			bytes.add((byte) inputStream.read());
@@ -42,9 +42,9 @@ public class TarXzFileSystem extends AbstractTarFileSystem {
 	}
 
 	@Override
-	protected void writeFile(byte[] tarBytes) throws IOException {
+	protected void writeFile(byte[] tarBytes, Path path) throws IOException {
 		XZCompressorOutputStream outputStream = new XZCompressorOutputStream(
-				Files.newOutputStream(tfpath,
+				Files.newOutputStream(path,
 						StandardOpenOption.TRUNCATE_EXISTING,
 						StandardOpenOption.WRITE));
 		outputStream.write(tarBytes, 0, tarBytes.length);

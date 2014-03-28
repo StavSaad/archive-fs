@@ -8,19 +8,20 @@ import java.util.Map;
 
 public class TarFileSystem extends AbstractTarFileSystem {
 
-	protected TarFileSystem(AbstractTarFileSystemProvider provider, Path tfpath,
-			Map<String, ?> env) throws IOException {
+	protected TarFileSystem(AbstractTarFileSystemProvider provider,
+			Path tfpath, Map<String, ?> env) throws IOException {
 		super(provider, tfpath, env);
 	}
 
 	@Override
-	protected byte[] readFile() throws IOException {
-		return Files.readAllBytes(tfpath);
+	protected byte[] readFile(Path path) throws IOException {
+		return Files.readAllBytes(path);
 	}
 
 	@Override
-	protected void writeFile(byte[] tarBytes) throws IOException {
-		Files.write(tfpath, tarBytes, StandardOpenOption.WRITE, StandardOpenOption.TRUNCATE_EXISTING);
+	protected void writeFile(byte[] tarBytes, Path path) throws IOException {
+		Files.write(path, tarBytes, StandardOpenOption.WRITE,
+				StandardOpenOption.TRUNCATE_EXISTING);
 	}
 
 }

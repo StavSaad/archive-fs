@@ -85,13 +85,13 @@ public abstract class AbstractTarFileSystem extends FileSystem {
 		mapEntries();
 	}
 
-	protected abstract byte[] readFile() throws IOException;
+	protected abstract byte[] readFile(Path path) throws IOException;
 
 	private void mapEntries() throws IOException {
 		beginRead();
 		try {
 			this.entriesToData.clear();
-			byte[] tfByteArray = Files.readAllBytes(tfpath);
+			byte[] tfByteArray = readFile(tfpath);
 			int numOfBlocks = (int) Math.ceil((double) tfByteArray.length
 					/ TarConstants.DATA_BLOCK) - 1; // discard the EOF block
 			for (int i = 0; i < numOfBlocks; i++) {
@@ -257,7 +257,7 @@ public abstract class AbstractTarFileSystem extends FileSystem {
 		}
 		beginWrite();
 		try {
-			writeFile(getTarBytes());
+			writeFile(getTarBytes(), tfpath);
 		} finally {
 			endWrite();
 		}
@@ -290,7 +290,7 @@ public abstract class AbstractTarFileSystem extends FileSystem {
 		return tar;
 	}
 
-	protected abstract void writeFile(byte[] tarBytes) throws IOException;
+	protected abstract void writeFile(byte[] tarBytes, Path outPath) throws IOException;
 
 	private final void beginWrite() {
 		rwlock.writeLock().lock();
