@@ -27,12 +27,13 @@ class TarGzipFileSystem extends AbstractTarFileSystem {
 
 	@Override
 	protected void writeFile(byte[] tarBytes, Path path) throws IOException {
-		GZIPOutputStream os = new GZIPOutputStream(Files.newOutputStream(path,
-				StandardOpenOption.TRUNCATE_EXISTING, StandardOpenOption.WRITE));
-		os.write(tarBytes, 0, tarBytes.length);
-		os.flush();
-		os.finish();
-		os.close();
+		try (GZIPOutputStream os = new GZIPOutputStream(Files.newOutputStream(
+				path, StandardOpenOption.TRUNCATE_EXISTING,
+				StandardOpenOption.WRITE))) {
+			os.write(tarBytes, 0, tarBytes.length);
+			os.flush();
+			os.finish();
+		}
 	}
 
 }

@@ -57,7 +57,7 @@ public class TarPath implements Path {
 		if (normalized) {
 			this.path = path;
 		} else {
-			this.path = normalize(path);
+			this.path = TarPath.normalize(path);
 		}
 	}
 
@@ -74,8 +74,7 @@ public class TarPath implements Path {
 	public Path getFileName() {
 		initOffsets();
 		int count = offsets.length;
-		if (count == 0)
-		{
+		if (count == 0) {
 			return null; // no elements so no name
 		}
 		if (count == 1 && path[0] != '/') {
@@ -118,7 +117,7 @@ public class TarPath implements Path {
 		}
 		int begin = offsets[index];
 		int len;
-		if (index == (offsets.length - 1)) {
+		if (index == offsets.length - 1) {
 			len = path.length - begin;
 		} else {
 			len = offsets[index + 1] - begin - 1;
@@ -170,7 +169,7 @@ public class TarPath implements Path {
 			// add / bofore the existing path
 			byte[] defaultdir = tfs.getDefaultDir().path;
 			int defaultlen = defaultdir.length;
-			boolean endsWith = (defaultdir[defaultlen - 1] == '/');
+			boolean endsWith = defaultdir[defaultlen - 1] == '/';
 			byte[] t = null;
 			if (endsWith) {
 				t = new byte[defaultlen + path.length];
@@ -199,14 +198,14 @@ public class TarPath implements Path {
 	private boolean equalsNameAt(TarPath other, int index) {
 		int mbegin = offsets[index];
 		int mlen = 0;
-		if (index == (offsets.length - 1)) {
+		if (index == offsets.length - 1) {
 			mlen = path.length - mbegin;
 		} else {
 			mlen = offsets[index + 1] - mbegin - 1;
 		}
 		int obegin = other.offsets[index];
 		int olen = 0;
-		if (index == (other.offsets.length - 1)) {
+		if (index == other.offsets.length - 1) {
 			olen = other.path.length - obegin;
 		} else {
 			olen = other.offsets[index + 1] - obegin - 1;
@@ -226,7 +225,7 @@ public class TarPath implements Path {
 
 	@Override
 	public Path relativize(Path other) {
-		final TarPath o = checkPath(other);
+		final TarPath o = TarPath.checkPath(other);
 		if (o.equals(this)) {
 			return new TarPath(getFileSystem(), new byte[0], true);
 		}
@@ -247,7 +246,7 @@ public class TarPath implements Path {
 		int dotdots = mc - i;
 		int len = dotdots * 3 - 1;
 		if (i < oc) {
-			len += (o.path.length - o.offsets[i] + 1);
+			len += o.path.length - o.offsets[i] + 1;
 		}
 		byte[] result = new byte[len];
 
@@ -274,12 +273,12 @@ public class TarPath implements Path {
 
 	@Override
 	public boolean isAbsolute() {
-		return (path.length > 0 && path[0] == '/');
+		return path.length > 0 && path[0] == '/';
 	}
 
 	@Override
 	public TarPath resolve(Path other) {
-		final TarPath o = checkPath(other);
+		final TarPath o = TarPath.checkPath(other);
 		if (o.isAbsolute()) {
 			return o;
 		}
@@ -304,14 +303,13 @@ public class TarPath implements Path {
 			throw new NullPointerException();
 		}
 		Path parent = getParent();
-		return (parent == null) ? other : parent.resolve(other);
+		return parent == null ? other : parent.resolve(other);
 	}
 
 	@Override
 	public boolean startsWith(Path other) {
-		final TarPath o = checkPath(other);
-		if (o.isAbsolute() != isAbsolute()
-				|| o.path.length > path.length) {
+		final TarPath o = TarPath.checkPath(other);
+		if (o.isAbsolute() != isAbsolute() || o.path.length > path.length) {
 			return false;
 		}
 		int olast = o.path.length;
@@ -327,7 +325,7 @@ public class TarPath implements Path {
 
 	@Override
 	public boolean endsWith(Path other) {
-		final TarPath o = checkPath(other);
+		final TarPath o = TarPath.checkPath(other);
 		int olast = o.path.length - 1;
 		if (olast > 0 && o.path[olast] == '/') {
 			olast--;
@@ -339,8 +337,7 @@ public class TarPath implements Path {
 		if (olast == -1) {
 			return last == -1;
 		}
-		if ((o.isAbsolute() && (!isAbsolute() || olast != last))
-				|| (last < olast)) {
+		if (o.isAbsolute() && (!isAbsolute() || olast != last) || last < olast) {
 			return false;
 		}
 		for (; olast >= 0; olast--, last--) {
@@ -380,7 +377,7 @@ public class TarPath implements Path {
 		return new TarPath(tfs, resolved, true);
 	}
 
-	private TarPath checkPath(Path path) {
+	private static TarPath checkPath(Path path) {
 		if (path == null) {
 			throw new NullPointerException();
 		}
@@ -451,7 +448,7 @@ public class TarPath implements Path {
 
 	// removes redundant slashs, replace "\" to zip separator "/"
 	// and check for invalid characters
-	private byte[] normalize(byte[] path) {
+	private static byte[] normalize(byte[] path) {
 		if (path.length == 0) {
 			return path;
 		}
@@ -459,10 +456,10 @@ public class TarPath implements Path {
 		for (int i = 0; i < path.length; i++) {
 			byte c = path[i];
 			if (c == '\\') {
-				return normalize(path, i);
+				return TarPath.normalize(path, i);
 			}
 			if (c == (byte) '/' && prevC == '/') {
-				return normalize(path, i - 1);
+				return TarPath.normalize(path, i - 1);
 			}
 			if (c == '\u0000') {
 				throw new InvalidPathException(new String(path),
@@ -473,7 +470,7 @@ public class TarPath implements Path {
 		return path;
 	}
 
-	private byte[] normalize(byte[] path, int off) {
+	private static byte[] normalize(byte[] path, int off) {
 		byte[] to = new byte[path.length];
 		int n = 0;
 		while (n < off) {
@@ -500,7 +497,7 @@ public class TarPath implements Path {
 		if (m > 1 && to[m - 1] == '/') {
 			m--;
 		}
-		return (m == to.length) ? to : Arrays.copyOf(to, m);
+		return m == to.length ? to : Arrays.copyOf(to, m);
 	}
 
 	// Remove DotSlash(./) and resolve DotDot (..) components
@@ -508,8 +505,7 @@ public class TarPath implements Path {
 		if (path.length == 0) {
 			return path;
 		}
-		for (int i = 0; i < path.length; i++) {
-			byte c = path[i];
+		for (byte c : path) {
 			if (c == (byte) '.') {
 				return resolve0();
 			}
@@ -526,8 +522,8 @@ public class TarPath implements Path {
 		int m = 0;
 		for (int i = 0; i < nc; i++) {
 			int n = offsets[i];
-			int len = (i == offsets.length - 1) ? (path.length - n)
-					: (offsets[i + 1] - n - 1);
+			int len = i == offsets.length - 1 ? path.length - n
+					: offsets[i + 1] - n - 1;
 			if (len == 1 && path[n] == (byte) '.') {
 				if (m == 0 && path[0] == '/') {
 					to[m++] = '/';
@@ -565,7 +561,7 @@ public class TarPath implements Path {
 		if (m > 1 && to[m - 1] == '/') {
 			m--;
 		}
-		return (m == to.length) ? to : Arrays.copyOf(to, m);
+		return m == to.length ? to : Arrays.copyOf(to, m);
 	}
 
 	@Override
@@ -585,13 +581,12 @@ public class TarPath implements Path {
 	@Override
 	public boolean equals(Object obj) {
 		return obj != null && obj instanceof TarPath
-				&& tfs == ((TarPath) obj).tfs
-				&& compareTo((Path) obj) == 0;
+				&& tfs == ((TarPath) obj).tfs && compareTo((Path) obj) == 0;
 	}
 
 	@Override
 	public int compareTo(Path other) {
-		final TarPath o = checkPath(other);
+		final TarPath o = TarPath.checkPath(other);
 		int len1 = path.length;
 		int len2 = o.path.length;
 
@@ -637,7 +632,7 @@ public class TarPath implements Path {
 
 			@Override
 			public boolean hasNext() {
-				return (i < getNameCount());
+				return i < getNameCount();
 			}
 
 			@Override
@@ -871,20 +866,14 @@ public class TarPath implements Path {
 			// create directory or file
 			target.createDirectory();
 		} else {
-			InputStream is = tfs.newInputStream(getResolvedPath());
-			try {
-				OutputStream os = target.newOutputStream();
-				try {
+			try (InputStream is = tfs.newInputStream(getResolvedPath())) {
+				try (OutputStream os = target.newOutputStream()) {
 					byte[] buf = new byte[8192];
 					int n = 0;
 					while ((n = is.read(buf)) != -1) {
 						os.write(buf, 0, n);
 					}
-				} finally {
-					os.close();
 				}
-			} finally {
-				is.close();
 			}
 		}
 		if (copyAttrs) {
@@ -897,7 +886,8 @@ public class TarPath implements Path {
 				// rollback?
 				try {
 					target.delete();
-				} catch (IOException ignore) {
+				} catch (IOException e) {
+					e.printStackTrace();
 				}
 				throw x;
 			}

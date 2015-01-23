@@ -41,7 +41,7 @@ public abstract class AbstractTarFileSystemProvider extends FileSystemProvider {
 
 	protected Path uriToPath(URI uri) {
 		String scheme = uri.getScheme();
-		if ((scheme == null) || !scheme.equalsIgnoreCase(getScheme())) {
+		if (scheme == null || !scheme.equalsIgnoreCase(getScheme())) {
 			throw new IllegalArgumentException("URI scheme is not '"
 					+ getScheme() + "'");
 		}
@@ -57,7 +57,9 @@ public abstract class AbstractTarFileSystemProvider extends FileSystemProvider {
 		}
 	}
 
-	protected abstract AbstractTarFileSystem newInstance(AbstractTarFileSystemProvider provider, Path path, Map<String, ?> env) throws IOException;
+	protected abstract AbstractTarFileSystem newInstance(
+			AbstractTarFileSystemProvider provider, Path path,
+			Map<String, ?> env) throws IOException;
 
 	protected boolean ensureFile(Path path) {
 		try {
@@ -144,51 +146,54 @@ public abstract class AbstractTarFileSystemProvider extends FileSystemProvider {
 
 	@Override
 	public void checkAccess(Path path, AccessMode... modes) throws IOException {
-		toTarPath(path).checkAccess(modes);
+		AbstractTarFileSystemProvider.toTarPath(path).checkAccess(modes);
 	}
 
 	@Override
 	public void copy(Path src, Path target, CopyOption... options)
 			throws IOException {
-		toTarPath(src).copy(toTarPath(target), options);
+		AbstractTarFileSystemProvider.toTarPath(src).copy(
+				AbstractTarFileSystemProvider.toTarPath(target), options);
 	}
 
 	@Override
 	public void createDirectory(Path path, FileAttribute<?>... attrs)
 			throws IOException {
-		toTarPath(path).createDirectory(attrs);
+		AbstractTarFileSystemProvider.toTarPath(path).createDirectory(attrs);
 	}
 
 	@Override
 	public final void delete(Path path) throws IOException {
-		toTarPath(path).delete();
+		AbstractTarFileSystemProvider.toTarPath(path).delete();
 	}
 
 	@Override
 	public <V extends FileAttributeView> V getFileAttributeView(Path path,
 			Class<V> type, LinkOption... options) {
-		return TarFileAttributeView.get(toTarPath(path), type);
+		return TarFileAttributeView.get(
+				AbstractTarFileSystemProvider.toTarPath(path), type);
 	}
 
 	@Override
 	public FileStore getFileStore(Path path) throws IOException {
-		return toTarPath(path).getFileStore();
+		return AbstractTarFileSystemProvider.toTarPath(path).getFileStore();
 	}
 
 	@Override
 	public boolean isHidden(Path path) {
-		return toTarPath(path).isHidden();
+		return AbstractTarFileSystemProvider.toTarPath(path).isHidden();
 	}
 
 	@Override
 	public boolean isSameFile(Path path, Path other) throws IOException {
-		return toTarPath(path).isSameFile(other);
+		return AbstractTarFileSystemProvider.toTarPath(path).isSameFile(other);
 	}
 
 	@Override
 	public void move(Path src, Path target, CopyOption... options)
 			throws IOException {
-		toTarPath(src).move(toTarPath(target), options);
+		AbstractTarFileSystemProvider.toTarPath(src).move(
+				AbstractTarFileSystemProvider.toTarPath(target), options);
 	}
 
 	@Override
@@ -201,33 +206,38 @@ public abstract class AbstractTarFileSystemProvider extends FileSystemProvider {
 	@Override
 	public SeekableByteChannel newByteChannel(Path path,
 			Set<? extends OpenOption> options, FileAttribute<?>... attrs)
-					throws IOException {
-		return toTarPath(path).newByteChannel(options, attrs);
+			throws IOException {
+		return AbstractTarFileSystemProvider.toTarPath(path).newByteChannel(
+				options, attrs);
 	}
 
 	@Override
 	public DirectoryStream<Path> newDirectoryStream(Path path,
 			Filter<? super Path> filter) throws IOException {
-		return toTarPath(path).newDirectoryStream(filter);
+		return AbstractTarFileSystemProvider.toTarPath(path)
+				.newDirectoryStream(filter);
 	}
 
 	@Override
 	public FileChannel newFileChannel(Path path,
 			Set<? extends OpenOption> options, FileAttribute<?>... attrs)
-					throws IOException {
-		return toTarPath(path).newFileChannel(options, attrs);
+			throws IOException {
+		return AbstractTarFileSystemProvider.toTarPath(path).newFileChannel(
+				options, attrs);
 	}
 
 	@Override
 	public InputStream newInputStream(Path path, OpenOption... options)
 			throws IOException {
-		return toTarPath(path).newInputStream(options);
+		return AbstractTarFileSystemProvider.toTarPath(path).newInputStream(
+				options);
 	}
 
 	@Override
 	public OutputStream newOutputStream(Path path, OpenOption... options)
 			throws IOException {
-		return toTarPath(path).newOutputStream(options);
+		return AbstractTarFileSystemProvider.toTarPath(path).newOutputStream(
+				options);
 	}
 
 	@SuppressWarnings("unchecked")
@@ -236,7 +246,8 @@ public abstract class AbstractTarFileSystemProvider extends FileSystemProvider {
 			Class<A> type, LinkOption... options) throws IOException {
 		if (type == BasicFileAttributes.class
 				|| type == TarFileAttributes.class) {
-			return (A) toTarPath(path).getAttributes();
+			return (A) AbstractTarFileSystemProvider.toTarPath(path)
+					.getAttributes();
 		}
 		return null;
 	}
@@ -244,7 +255,8 @@ public abstract class AbstractTarFileSystemProvider extends FileSystemProvider {
 	@Override
 	public Map<String, Object> readAttributes(Path path, String attribute,
 			LinkOption... options) throws IOException {
-		return toTarPath(path).readAttributes(attribute, options);
+		return AbstractTarFileSystemProvider.toTarPath(path).readAttributes(
+				attribute, options);
 	}
 
 	@Override
@@ -255,14 +267,16 @@ public abstract class AbstractTarFileSystemProvider extends FileSystemProvider {
 	@Override
 	public void setAttribute(Path path, String attribute, Object value,
 			LinkOption... options) throws IOException {
-		toTarPath(path).setAttribute(attribute, value, options);
+		AbstractTarFileSystemProvider.toTarPath(path).setAttribute(attribute,
+				value, options);
 	}
 
-	void removeFileSystem(Path tfpath, AbstractTarFileSystem tfs) throws IOException {
+	void removeFileSystem(Path tfpath, AbstractTarFileSystem tfs)
+			throws IOException {
 		synchronized (filesystems) {
-			tfpath = tfpath.toRealPath();
-			if (filesystems.get(tfpath) == tfs) {
-				filesystems.remove(tfpath);
+			Path realPath = tfpath.toRealPath();
+			if (filesystems.get(realPath) == tfs) {
+				filesystems.remove(realPath);
 			}
 		}
 	}

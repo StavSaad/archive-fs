@@ -13,7 +13,7 @@ public class TarFileAttributes implements BasicFileAttributes
 		this.e = e;
 	}
 
-	///////// basic attributes ///////////
+	// /////// basic attributes ///////////
 	@Override
 	public FileTime creationTime() {
 		return null;
@@ -62,11 +62,12 @@ public class TarFileAttributes implements BasicFileAttributes
 	@Override
 	public String toString() {
 		StringBuilder sb = new StringBuilder(1024);
-		Formatter fm = new Formatter(sb);
-		fm.format("    lastModifiedTime: %tc%n", lastModifiedTime().toMillis());
-		fm.format("    isDirectory     : %b%n", isDirectory());
-		fm.format("    size            : %d%n", size());
-		fm.close();
+		try (Formatter fm = new Formatter(sb)) {
+			fm.format("    lastModifiedTime: %tc%n", lastModifiedTime()
+					.toMillis());
+			fm.format("    isDirectory     : %b%n", isDirectory());
+			fm.format("    size            : %d%n", size());
+		}
 		return sb.toString();
 	}
 }

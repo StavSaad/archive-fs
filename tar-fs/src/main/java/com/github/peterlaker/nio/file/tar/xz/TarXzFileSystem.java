@@ -28,14 +28,14 @@ class TarXzFileSystem extends AbstractTarFileSystem {
 
 	@Override
 	protected void writeFile(byte[] tarBytes, Path path) throws IOException {
-		XZCompressorOutputStream outputStream = new XZCompressorOutputStream(
+		try (XZCompressorOutputStream outputStream = new XZCompressorOutputStream(
 				Files.newOutputStream(path,
 						StandardOpenOption.TRUNCATE_EXISTING,
-						StandardOpenOption.WRITE));
-		outputStream.write(tarBytes, 0, tarBytes.length);
-		outputStream.finish();
-		outputStream.flush();
-		outputStream.close();
+						StandardOpenOption.WRITE))) {
+			outputStream.write(tarBytes, 0, tarBytes.length);
+			outputStream.finish();
+			outputStream.flush();
+		}
 	}
 
 }

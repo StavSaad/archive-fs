@@ -28,14 +28,14 @@ class TarBzip2FileSystem extends AbstractTarFileSystem {
 
 	@Override
 	protected void writeFile(byte[] tarBytes, Path path) throws IOException {
-		BZip2CompressorOutputStream outputStream = new BZip2CompressorOutputStream(
+		try (BZip2CompressorOutputStream outputStream = new BZip2CompressorOutputStream(
 				Files.newOutputStream(path,
 						StandardOpenOption.TRUNCATE_EXISTING,
-						StandardOpenOption.WRITE));
-		outputStream.write(tarBytes, 0, tarBytes.length);
-		outputStream.finish();
-		outputStream.flush();
-		outputStream.close();
+						StandardOpenOption.WRITE))) {
+			outputStream.write(tarBytes, 0, tarBytes.length);
+			outputStream.finish();
+			outputStream.flush();
+		}
 	}
 
 }
