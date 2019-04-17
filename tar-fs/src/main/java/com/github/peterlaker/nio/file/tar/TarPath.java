@@ -787,7 +787,7 @@ public class TarPath implements Path {
 			}
 		}
 		TarFileAttributes attrs = tfs.getFileAttributes(getResolvedPath());
-		if (attrs == null && (path.length != 1 || path[0] != '/')) {
+		if ((attrs == null || !attrs.exists()) && (path.length != 1 || path[0] != '/')) {
 			throw new NoSuchFileException(toString());
 		}
 		if (w) {

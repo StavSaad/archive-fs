@@ -11,11 +11,13 @@ import java.nio.file.StandardCopyOption;
 import java.util.Collections;
 
 import org.junit.After;
+import org.junit.Assert;
 import org.junit.Test;
 
 public class TarFileSystemTests {
 
 	private Path createPath = Paths.get("createPath.tar");
+	private Path expectedCreateTarPath = Paths.get("src/test/resources/createPath.tar");
 	private Path sampleFile = Paths.get("src/test/resources/sampleFile.txt");
 
 	@Test
@@ -29,6 +31,10 @@ public class TarFileSystemTests {
 			Path newFile = tfs.getPath("hell/sampleFile.txt");
 			Files.copy(sampleFile, newFile, StandardCopyOption.COPY_ATTRIBUTES);
 		}
+		Assert.assertTrue(Files.exists(createPath));
+		byte[] expectedBytes = Files.readAllBytes(expectedCreateTarPath);
+		byte[] actualBytes = Files.readAllBytes(createPath);
+		Assert.assertArrayEquals(expectedBytes, actualBytes);
 	}
 
 	@After

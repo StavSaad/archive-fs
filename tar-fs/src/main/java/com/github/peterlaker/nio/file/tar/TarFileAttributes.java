@@ -4,13 +4,15 @@ import java.nio.file.attribute.BasicFileAttributes;
 import java.nio.file.attribute.FileTime;
 import java.util.Formatter;
 
-public class TarFileAttributes implements BasicFileAttributes
-
-{
+public class TarFileAttributes implements BasicFileAttributes {
 	private final TarEntry e;
 
 	TarFileAttributes(TarEntry e) {
 		this.e = e;
+	}
+	
+	public boolean exists() {
+		return e != null;
 	}
 
 	// /////// basic attributes ///////////
