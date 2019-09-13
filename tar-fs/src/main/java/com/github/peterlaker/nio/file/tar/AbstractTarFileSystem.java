@@ -259,15 +259,17 @@ public abstract class AbstractTarFileSystem extends FileSystem {
 		} finally {
 			endWrite();
 		}
-		beginWrite();
-		try {
-			if (Files.notExists(tfpath)) {
-				Files.createDirectories(tfpath.getParent());
-				Files.createFile(tfpath);
+		if (!isReadOnly()) {
+			beginWrite();
+			try {
+				if (Files.notExists(tfpath)) {
+					Files.createDirectories(tfpath.getParent());
+					Files.createFile(tfpath);
+				}
+				writeFile(getTarBytes(), tfpath);
+			} finally {
+				endWrite();
 			}
-			writeFile(getTarBytes(), tfpath);
-		} finally {
-			endWrite();
 		}
 		provider.removeFileSystem(tfpath, this);
 	}
